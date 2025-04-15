@@ -1,5 +1,6 @@
 import re
 import fitz  # PyMuPDF
+#Hi
 
 def is_reduplicated(word):
     # Check for repeated 2 or 3 letter substrings followed by S or another character
