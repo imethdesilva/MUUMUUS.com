@@ -4,6 +4,9 @@ from reportlab.lib import colors
 from reportlab.lib.units import inch
 from reportlab.lib.colors import HexColor
 import os
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import Paragraph
+from reportlab.lib.enums import TA_LEFT
 
 # Scrabble letter values (EN version)
 letter_points = {
@@ -19,9 +22,11 @@ letter_points = {
 # Modern Scrabble-inspired color palette
 TILE_BG = HexColor('#F5E9CB')       # Light cream for tiles
 TILE_BORDER = HexColor('#BA8755')    # Wood-like border
-HEADER_BG = HexColor('#006C3C')      # Scrabble board green
+HEADER_BG = HexColor('#6C0BA9')      # Scrabble board green
 HEADER_TEXT = HexColor('#FFFFFF')    # White text
 TEXT_COLOR = HexColor('#333333')     # Dark gray for text
+BOX_COLOR = HexColor('#E0E0E0')      # Light gray for boxes
+BOX_BORDER = HexColor('#AAAAAA')     # Medium gray for box borders
 
 def draw_tile(c, letter, x, y, tile_size=24):
     """Draw a single Scrabble tile with authentic styling"""
@@ -62,20 +67,53 @@ def draw_scrabble_word(c, word, x, y, tile_size=24):
     # Return the total width
     return len(word) * (tile_size + spacing) - spacing
 
-def create_pdf(words, output_filename):
+def draw_definition_box(c, definition, x, y, width, height=50):
+    """Draw a word definition with proper wrapping in a box"""
+    # Draw background box for definition
+    c.setFillColor(BOX_COLOR)
+    c.setStrokeColor(BOX_BORDER)
+    c.setLineWidth(0.5)
+    c.roundRect(x, y - height, width, height, 5, fill=1, stroke=1)
+    
+    # Create paragraph style
+    styles = getSampleStyleSheet()
+    custom_style = ParagraphStyle(
+        'Definition',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=10,
+        textColor=TEXT_COLOR,
+        leading=12,  # Line spacing
+        alignment=TA_LEFT,
+        allowWidows=0,
+        allowOrphans=0
+    )
+    
+    # Create paragraph object with appropriate padding
+    padding = 10
+    p = Paragraph(definition, custom_style)
+    
+    # Make sure text fits within the box with padding
+    available_width = width - (2 * padding)
+    available_height = height - (2 * padding)
+    
+    # Get width and height of the paragraph
+    w, h = p.wrap(available_width, available_height)
+    
+    # Draw the paragraph inside the box with padding
+    p.drawOn(c, x + padding, y - height + padding)
+    
+    return height
+
+def create_pdf(words, definitions, output_filename):
     c = canvas.Canvas(output_filename, pagesize=LETTER)
     page_width, page_height = LETTER
     
-    words_per_page = 30
-    words_per_column = 15
+    words_per_page = 13
     
     # Calculate how many pages we need
     total_words = len(words)
     total_pages = (total_words + words_per_page - 1) // words_per_page
-
-    # Calculate column positions (keep track of column centers)
-    col1_center = left_margin + (col_width / 2)
-    col2_center = center_x + 15 + (col_width / 2)
     
     for page in range(total_pages):
         # Draw header on each page
@@ -88,73 +126,67 @@ def create_pdf(words, output_filename):
         c.setFont("Helvetica-Bold", 24)
         c.drawCentredString(page_width/2, page_height - 35, "REDUPLICATED SEVENS")
         
+        # Setup margins and spacing
+        left_margin = 30
+        right_margin = page_width - 30
+        
+        # Calculate column width and positions
+        center_x = page_width / 2
+        col_width = (right_margin - left_margin - 30) / 2  # 30 is gutter width
+        
         # Calculate available space - increased space below header
         top_margin = 785 - 70  # More space below header
         bottom_margin = 30     # Space at bottom
         available_height = top_margin - bottom_margin
         
         # Calculate row height based on available space
-        row_height = available_height / words_per_column
-        
-        # Setup margins and spacing
-        left_margin = 30
-        right_margin = page_width - 30
-        
-        # Calculate column width
-        col_width = (right_margin - left_margin - 30) / 2  # 30 is gutter width
+        row_height = available_height / words_per_page
         
         # Calculate tile size based on available space
-        # For 7-letter words with spacing
-        tile_size = 24  # Fixed tile size for better appearance
+        tile_size = 28  # Fixed tile size for better appearance
+        spacing = 2     # Space between tiles
         
-        # Draw subtle column divider
-        center_x = page_width / 2
-        c.setStrokeColor(HexColor('#DDDDDD'))
-        c.setDash([2, 3], 0)
-        c.line(center_x, top_margin + 5, center_x, bottom_margin - 5)
-        c.setDash([], 0)
-        
-        # Calculate column positions
-        col1_x = left_margin
-        col2_x = center_x + 15
-        
-        # Draw words for this page
-        for col in range(2):  # Two columns
-            for row in range(words_per_column):
-                word_idx = page * words_per_page + col * words_per_column + row
+        # Draw words and definitions for this page
+        for row in range(words_per_page):
+            word_idx = page * words_per_page + row
+            
+            if word_idx < len(words):
+                word = words[word_idx]
+                definition = definitions[word_idx]
                 
-                if word_idx < len(words):
-                    word = words[word_idx]
-                    
-                    # Get column center position
-                    column_center = col1_center if col == 0 else col2_center
-                    
-                    # Calculate total word width
-                    word_width = (len(word) * (tile_size + spacing)) - spacing
-                    
-                    # Calculate x position to center the word in the column
-                    x = column_center - (word_width / 2)
-                    
-                    # Y position: calculate position to evenly distribute
-                    y = top_margin - (row * row_height) - 15
-                    
-                    # Draw word
-                    draw_scrabble_word(c, word, x, y, tile_size)
+                # Calculate positions
+                # Words on the left side
+                word_x = left_margin + 20  # Left align the words, with some padding
+                
+                # Definitions on the right side
+                def_x = center_x + 15  # Start definitions after center line with padding
+                def_width = col_width - 25  # Leave some margin, reduced to ensure text fits
+                
+                # Y position: calculate position to evenly distribute
+                y = top_margin - (row * row_height) - 35
+                
+                # Draw word (no box, just the tiles)
+                draw_scrabble_word(c, word, word_x, y, tile_size)
+                
+                # Fixed height for definition box
+                def_box_height = 36  # Adjusted for better appearance
+                
+                # Draw definition in a box
+                draw_definition_box(c, definition, def_x, y + 30, def_width, def_box_height)
 
-       # Add page number at bottom (except for single page documents)
+        # Add page number at bottom
         if total_pages > 1:
             c.setFont("Helvetica", 8)
             c.setFillColor(TEXT_COLOR)
-            c.drawCentredString(page_width/2, 20, f"Page {page+1} of {total_pages}")
+           
             
         # Add attribution
-        c.setFont("Helvetica", 6)
+        c.setFont("Helvetica", 8)
         c.setFillColor(HexColor('#888888'))
-        c.drawCentredString(page_width/2, 12, "Scrabble Word Reference • Reduplicated Seven-Letter Words • Meith ")
+        c.drawCentredString(page_width/2, 14, "Scrabble • Reduplicated Seven-Letter Words • Compiled by Meith ")
             
         if page < total_pages - 1:
             c.showPage()  # New page
-            
     
     c.save()
     print(f"✅ Optimized Scrabble-style PDF saved as: {output_filename}")
@@ -177,4 +209,59 @@ reduplicated_words = [
     "TUATUAS", "TZETZES", "TZITZIS", "WEEWEES", "ZOOZOOS"
 ]
 
-create_pdf(reduplicated_words, "Reduplicated_Sevens_Optimized.pdf")
+# Create dummy definitions - one for each word
+definitions = [
+    "New Zealand tree [n]",
+    "TREVALLY, any of various food and game fishes [n]",
+    "Grazing marine gastropod [n]",
+    "Native American throwing stick [n]",
+    "Air rifle [n]",
+    "berbere (hot-tasting Ethiopian paste)",  
+    "Sweet [n]",
+    "Blunder [n]",
+    "Long flowing garment [n]",
+    "Black robe worn by Muslim women in East Africa [n]",
+    "Songbird of tropical Africa and Asia [n]",
+    "Lively high-kicking dance performed by a female group [n]",
+    "Affectedly pretty or stylish [adj]",
+    "Chayote (tropical climbing plant) [n]", 
+    "Small African antelope [n]",
+    "Excrement (slang) [n]",
+    "Soft-nosed bullet [n]",
+    "Scurf or scaling of the skin [n]",
+    "African talisman, amulet, or charm [n]",
+    "Tropical American palm [n]",
+    "Indian cotton cloth [n]",
+    "Not Family [v]",  
+    "Food [n]",
+    "Climbing bush plant of New Zealand [n]",
+    "Red pigment used by Hindu women to make a mark on the forehead [n]",
+    "Twining leguminous plant [n]",
+    "Logarithm of a logarithm (in equations, etc) [n]",
+    "Fish of New Zealand seas [n]",
+    "Tropical American bird with a long tail and blue and brownish-green plumage [n]",
+    "Muslin [n]",
+    "Speak or say in a quiet indistinct way [v]",
+    "Loose brightly coloured dress worn by women in Hawaii [n]",
+    "Type of plant [n]",
+    "pawpaw",  
+    "New Zealand thrush, thought to be extinct [n]",
+    "Skirt worn by Maoris on ceremonial occasions [n]",
+    "Decorative ball of tufted wool, silk, etc [n]",
+    "Sansar (name of a wind that blows in Iran)",  
+    "Sesame [n]",
+    "Arctic ground squirrel [n]",
+    "Hard deposit on the teeth [n]",
+    "toitoi (tall grasses with feathery fronds)",  
+    "Tall grasses with feathery fronds [n]",
+    "Any of various bloodsucking African flies [n]",
+    "tsk (utter the sound 'tsk', usu in disapproval) [v]",  
+    "Edible marine bivalve of New Zealand waters [n]",
+    "TSETSE, any of various bloodsucking African flies [n]", 
+    "Tassels or fringes of thread attached to the four corners of tallith [n]",
+    "Urinate [v]",
+    "Wood pigeon [n]"
+]
+
+
+create_pdf(reduplicated_words, definitions, "Reduplicated_Sevens_Fixed.pdf")
