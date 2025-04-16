@@ -24,5 +24,6 @@ muumuus.com will be a site where;
 - features my very own Random Tile Rack Generator
 - plans on integrating an Equity Tester
 - Access to cool games, articles and puzzles
+- Premade quizzes based on word lists
 
   
