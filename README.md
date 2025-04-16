@@ -11,3 +11,18 @@ The code iterates through the entire 34,506 words and filts out the reduplicated
 Precisely, I found out the existence of 50 such words. Approximately 0.14% of all seven letter words!
 
 I added these sevens to a PDF in a nice UI and basically anyone can use it for their interest and benefit of playing or learning obscure words.
+
+#####
+
+Future Implementations (muumuus.com)
+
+muumuus.com will be a site where;
+
+- anyone can access all types of scrabble word lists
+- features a roadmap of studying and a progress page
+- online scrabble word checker with features similar to zyzzyva (need to get access to the .txt of CSW24)
+- features my very own Random Tile Rack Generator
+- plans on integrating an Equity Tester
+- Access to cool games, articles and puzzles
+
+- 
