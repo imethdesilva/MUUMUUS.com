@@ -1,4 +1,4 @@
-# Project-MUUMUUS
+# MUUMUUS.com
 
 In the CSW24 version (Collins Scrabble Words 24) there are 34,506 valid seven-letter words. I wanted to find a list of seven-letter words which are reduplicated.
 
@@ -25,4 +25,4 @@ muumuus.com will be a site where;
 - plans on integrating an Equity Tester
 - Access to cool games, articles and puzzles
 
-- 
+  
