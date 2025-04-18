@@ -1,0 +1,126 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Change to column layout */
+    height: 100vh;
+    transition: background-color 0s ease;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 100px;
+    font-size: 4rem;
+    color: #333;
+}
+
+.tile-rack {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 100px;
+}
+
+.tile {
+    width: 150px;
+    height: 150px;
+    background-color: #f9d29c;
+    border: 2px solid #b08e6a;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    font-size: 5rem;
+    font-weight: bold;
+    color: #333;
+    text-transform: uppercase;
+}
+
+.tile-value {
+    font-size: 1.5rem;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    color: #555;
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+}
+
+.btn:hover {
+    background-color: #45a049;
+}
+
+.dark-mode-btn {
+    margin-top: 20px; /* Add margin for spacing */
+}
+
+/* Footer styles */
+footer {
+    position: absolute; /* Fix the footer to the bottom */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center; /* Center the text */
+    padding: 10px 0; /* Add some padding */
+    background-color: #000000; /* Brown color for light mode */
+    color: white; /* White text color */
+}
+
+/* Dark mode styles */
+body.dark-mode {
+    background-color: #180f29;
+    color: white;
+}
+
+body.dark-mode h1 {
+    color: white;
+}
+
+body.dark-mode .btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+body.dark-mode .btn:hover {
+    background-color: #4CAF50;
+}
+
+/* Footer in dark mode */
+body.dark-mode footer {
+    background-color: white; /* Change footer color to white in dark mode */
+    color: #1e1238; /* Change text color to dark for contrast */
+}
+
+/* Silver tiles in dark mode */
+body.dark-mode .tile {
+    background-color: silver;
+    color: #000000;
+}
+
+body.dark-mode .tile-value {
+    color: #000;
+}
+.tile.dragging {
+    opacity: 0.5; /* Make the tile semi-transparent while dragging */
+}
