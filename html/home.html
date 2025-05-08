@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MuuMuus.com</title>
+  <style>
+    :root {
+      --apple-green: #8db600;
+      --offwhite: #f8f8f2;
+      --dark: #2e2e2e;
+      --accent: #4caf50;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: url('img/3.png') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--dark);
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 60px 20px 20px;
+    }
+
+    .logo img {
+      width: 120px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    nav {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      padding: 10px 20px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 60px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+    }
+
+    .content, footer {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px 20px;
+      margin: 20px auto;
+      max-width: 1000px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    footer {
+      text-align: center;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="img/logo_main.png" alt="Muumuus Logo" />
+    </div>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Word Lists</a>
+      <a href="#">Study Maps</a>
+      <a href="#">RTG</a>
+      <a href="#">Word Checker</a>
+      <a href="#">About</a>
+    </nav>
+  </div>
+
+  <div class="content">
+    <h2>About MuuMuus.com</h2>
+    <p>Welcome to your ultimate Scrabble learning hub! From curated word lists to smart study maps, we've got the tools to sharpen your game.</p>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 MuuMuus.com — All rights reserved.</p>
+  </footer>
+</body>
+</html>
